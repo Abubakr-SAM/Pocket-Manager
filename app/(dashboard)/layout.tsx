@@ -3,6 +3,7 @@ import Sidebar from "@/components/Sidebar";
 import { CurrencyProvider } from "@/components/CurrencyProvider";
 import { getProfileSettings } from "@/lib/get-currency";
 import { redirect } from "next/navigation";
+import Logo from "@/components/Logo"; 
 
 export default async function DashboardLayout({
   children,
@@ -19,7 +20,10 @@ export default async function DashboardLayout({
 
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-40 border-b border-line bg-background px-6 py-3 md:hidden">
-            <span className="text-lg font-semibold">Pocket Manager</span>
+            <span className="flex items-center gap-2 text-lg font-semibold">
+              <Logo size={24} />
+                Pocket Manager
+            </span>
           </header>
 
           <main className="flex-1 p-6 pb-24 md:p-8">

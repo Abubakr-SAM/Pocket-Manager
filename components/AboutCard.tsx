@@ -1,5 +1,6 @@
 import { SITE } from "@/lib/site";
 import { getT } from "@/lib/i18n/server";
+import Logo from "@/components/Logo";
 
 export default async function AboutCard() {
   const t = await getT();
@@ -7,9 +8,7 @@ export default async function AboutCard() {
   return (
     <section className="space-y-5 rounded-xl border border-line bg-card p-6">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground text-sm font-semibold text-background">
-          PM
-        </div>
+        <Logo size={40} className="shrink-0" />
         <div>
           <h2 className="font-medium">{SITE.name}</h2>
           <p className="text-sm text-muted">{t("about.tagline")}</p>

@@ -8,6 +8,7 @@ import { currencySymbol } from "@/lib/format";
 import { LANGUAGES, type Language } from "@/lib/i18n";
 import { saveLanguage } from "@/lib/i18n/client";
 import { useT } from "./LanguageProvider";
+import Logo from "@/components/Logo";
 
 // Til tanlanganda mos valyutani taklif qilamiz
 const SUGGESTED: Record<Language, string> = {
@@ -65,9 +66,7 @@ export default function WelcomeForm({
   return (
     <div className="space-y-6 rounded-xl border border-line bg-card p-6 sm:p-8">
       <div className="space-y-2 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-foreground text-sm font-semibold text-background">
-          PM
-        </div>
+        <Logo size={48} className="mx-auto" />
         <h1 className="text-xl font-semibold">{t("welcome.title")}</h1>
         <p className="text-sm text-muted">
           {t("welcome.greeting", { name: firstName })}

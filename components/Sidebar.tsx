@@ -6,6 +6,7 @@ import { LogOut } from "lucide-react";
 import { navLinks } from "./navLinks";
 import LogoutButton from "./LogoutButton";
 import { useT } from "./LanguageProvider";
+import Logo from "@/components/Logo";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -13,7 +14,10 @@ export default function Sidebar() {
 
   return (
     <aside className="sticky top-0 hidden h-screen w-60 flex-col border-r border-line bg-background p-4 md:flex">
-      <div className="mb-8 px-3 text-lg font-semibold">Pocket Manager</div>
+      <div className="mb-8 flex items-center gap-2 px-3 text-lg font-semibold">
+  <Logo size={28} />
+  Pocket Manager
+</div>
 
       <nav className="flex flex-col gap-1">
         {navLinks.map(({ href, labelKey, icon: Icon }) => {

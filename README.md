@@ -6,11 +6,11 @@
 
 > Sign up with any email to try it. Email confirmation is turned off for the demo.
 
-![Dashboard](docs/screenshots/dashboard-dark.png)
+![Dashboard](docs/Screenshots/dashboard-dark.png)
 
 | Light theme | Mobile |
 |---|---|
-| ![Dashboard light](docs/screenshots/dashboard-light.png) | ![Mobile](docs/screenshots/mobile.png) |
+| ![Dashboard light](docs/Screenshots/dashboard-light.png) | ![Mobile](docs/Screenshots/mobile.png) |
 
 ## Why I built this
 
@@ -144,13 +144,13 @@ The SQL for every table, policy, trigger and function is in [`supabase/`](supaba
 
 | Transactions | Monthly plan |
 |---|---|
-| ![Transactions](docs/screenshots/transactions.png) | ![Plan](docs/screenshots/plan.png) |
+| ![Transactions](docs/Screenshots/transactions.png) | ![Plan](docs/Screenshots/plan.png) |
 
 | Savings goals | Statistics |
 |---|---|
-| ![Goals](docs/screenshots/goals.png) | ![Statistics](docs/screenshots/statistics.png) |
+| ![Goals](docs/Screenshots/goals.png) | ![Statistics](docs/Screenshots/statistics.png) |
 
-![Welcome screen](docs/screenshots/welcome.png)
+![Welcome screen](docs/Screenshots/welcome.png)
 
 ## Run it locally
 

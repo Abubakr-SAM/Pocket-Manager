@@ -1,8 +1,10 @@
-import type { Metadata } from "next";
+
+import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import { getLanguage } from "@/lib/i18n/server";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -10,10 +12,25 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   title: "Pocket Manager",
-  description: "Personal finance manager for students",
+  description: "Personal finance manager",
+  applicationName: "Pocket Manager",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Pocket Manager",
+  },
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon-192.png",
+  },
 };
 
-// Sahifa ko'rinishidan oldin saqlangan mavzuni qo'llaydi (yonib qolishning oldini oladi)
+export const viewport: Viewport = {
+  themeColor: "#0a0a0a",
+  width: "device-width",
+  initialScale: 1,
+};
+
 const themeScript = `(function(){try{var t=localStorage.getItem("theme");var dark=t==="light"?false:t==="system"?window.matchMedia("(prefers-color-scheme: dark)").matches:true;document.documentElement.dataset.theme=dark?"dark":"light";}catch(e){document.documentElement.dataset.theme="dark";}})();`;
 
 export default async function RootLayout({
@@ -21,7 +38,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-    const lang = await getLanguage();
+  const lang = await getLanguage();
+
   return (
     <html
       lang={lang}

@@ -40,8 +40,10 @@ export default function TransactionForm({
     transaction?.type ?? "expense"
   );
   const [amount, setAmount] = useState(
-    transaction ? String(transaction.amount) : ""
-  );
+  transaction
+    ? Number(transaction.amount).toLocaleString("en-US").replace(/,/g, " ")
+    : ""
+);
   const [categoryId, setCategoryId] = useState(transaction?.category_id ?? "");
   const [description, setDescription] = useState(
     transaction?.description ?? ""
@@ -63,7 +65,7 @@ export default function TransactionForm({
     e.preventDefault();
     setError(null);
 
-    const value = Number(amount);
+    const value = Number(amount.replace(/\s/g, ""));
     if (!value || value <= 0) {
       setError(tr("transactions.amountError"));
       return;
@@ -137,15 +139,18 @@ export default function TransactionForm({
           </label>
           <input
             id={`amount-${transaction?.id ?? "new"}`}
-            type="number"
-            inputMode="decimal"
-            step="0.01"
-            min="0.01"
+            type="text"
+            inputMode="numeric"
             required
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className={inputClass}
-          />
+            onChange={(e) =>
+          {
+    const digits = e.target.value.replace(/\D/g, "");
+    const formatted = digits.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    setAmount(formatted);
+  }}
+  className={inputClass}
+/>
         </div>
 
         <div className="space-y-1">

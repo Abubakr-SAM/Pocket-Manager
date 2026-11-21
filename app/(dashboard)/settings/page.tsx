@@ -28,10 +28,10 @@ export default async function SettingsPage() {
 
   return (
     <div className="space-y-8">
-      <header>
-        <h1 className="text-2xl font-semibold">{t("settings.title")}, Manage your account. → {t("settings.subtitle")}</h1>
-        <p className="text-muted">Manage your account.</p>
-      </header>
+  <header>
+    <h1 className="text-2xl font-semibold">{t("settings.title")}</h1>
+    <p className="text-muted">{t("settings.subtitle")}</p>
+  </header>
 
             <div className="grid max-w-5xl items-start gap-6 lg:grid-cols-2">
         <div className="space-y-6">

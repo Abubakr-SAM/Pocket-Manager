@@ -1,4 +1,6 @@
+
 "use client";
+
 import { categoryLabel } from "@/lib/i18n/categories";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -25,11 +27,25 @@ const inputClass =
   "w-full rounded-lg border border-line bg-background px-3 py-2 text-sm outline-none focus:border-muted";
 
 const round = (n: number) => Math.round(n * 100) / 100;
+
 const formatAmount = (amount: number) =>
   amount.toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+
+const formatInputAmount = (value: string) => {
+  const cleaned = value.replace(/[^\d.]/g, "");
+  const parts = cleaned.split(".");
+  const integer = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+
+  return parts.length > 1
+    ? `${integer}.${parts.slice(1).join("")}`
+    : integer;
+};
+
+const parseInputAmount = (value: string) =>
+  Number(value.replace(/\s/g, ""));
 
 function monthRange(monthKey: string) {
   const [year, month] = monthKey.split("-").map(Number);
@@ -91,12 +107,13 @@ export default function PlanManager({
     e.preventDefault();
     setAddError(null);
 
-    const value = Number(amount);
+    const value = parseInputAmount(amount);
+
     if (!name.trim()) {
       setAddError(t("plan.nameError"));
       return;
     }
-    if (!value || value <= 0) {
+    if (!Number.isFinite(value) || !value || value <= 0) {
       setAddError(t("plan.amountError"));
       return;
     }
@@ -127,7 +144,7 @@ export default function PlanManager({
   function startEdit(item: PlanItem) {
     setEditingId(item.id);
     setEditName(item.name);
-    setEditAmount(String(item.amount));
+    setEditAmount(formatInputAmount(String(item.amount)));
     setEditDue(item.due_date ?? "");
     setEditError(null);
   }
@@ -135,12 +152,13 @@ export default function PlanManager({
   async function saveEdit() {
     if (!editingId) return;
 
-    const value = Number(editAmount);
+    const value = parseInputAmount(editAmount);
+
     if (!editName.trim()) {
       setEditError("Enter a name.");
       return;
     }
-    if (!value || value <= 0) {
+    if (!Number.isFinite(value) || !value || value <= 0) {
       setEditError(t("plan.amountError"));
       return;
     }
@@ -171,7 +189,6 @@ export default function PlanManager({
     setListError(null);
     const supabase = createClient();
 
-    // To'langan bo'lsa: tranzaksiyani o'chiramiz, reja o'zi "to'lanmagan"ga qaytadi
     if (item.transaction_id) {
       const { error } = await supabase
         .from("transactions")
@@ -188,7 +205,6 @@ export default function PlanManager({
       return;
     }
 
-    // To'lanmagan bo'lsa: xarajat tranzaksiyasini yozib, rejaga bog'laymiz
     const { data: transaction, error } = await supabase
       .from("transactions")
       .insert({
@@ -317,12 +333,10 @@ export default function PlanManager({
             </label>
             <input
               id="plan-amount"
-              type="number"
+              type="text"
               inputMode="decimal"
-              step="0.01"
-              min="0.01"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => setAmount(formatInputAmount(e.target.value))}
               className={inputClass}
             />
           </div>
@@ -379,9 +393,7 @@ export default function PlanManager({
         {listError && <p className="mt-2 text-sm text-expense">{listError}</p>}
 
         {items.length === 0 ? (
-          <p className="mt-2 text-sm text-muted">
-            {t("plan.empty")}.
-          </p>
+          <p className="mt-2 text-sm text-muted">{t("plan.empty")}.</p>
         ) : (
           <ul className="mt-2 divide-y divide-line">
             {sorted.map((item) => {
@@ -402,13 +414,13 @@ export default function PlanManager({
                         className={inputClass}
                       />
                       <input
-                        type="number"
+                        type="text"
                         inputMode="decimal"
-                        step="0.01"
-                        min="0.01"
                         aria-label={t("transactions.amount")}
                         value={editAmount}
-                        onChange={(e) => setEditAmount(e.target.value)}
+                        onChange={(e) =>
+                          setEditAmount(formatInputAmount(e.target.value))
+                        }
                         className={inputClass}
                       />
                       <input
@@ -457,7 +469,9 @@ export default function PlanManager({
                     onClick={() => togglePaid(item)}
                     disabled={busyId === item.id}
                     aria-pressed={isPaid}
-                    aria-label={isPaid ? t("plan.markUnpaid") : t("plan.markPaid")}
+                    aria-label={
+                      isPaid ? t("plan.markUnpaid") : t("plan.markPaid")
+                    }
                     className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-colors disabled:opacity-50 ${
                       isPaid
                         ? "border-income bg-income text-background"
@@ -477,8 +491,14 @@ export default function PlanManager({
                     </p>
                     <p className="text-xs text-muted">
                       {[
-                        item.category_name ? categoryLabel(item.category_name, t) : null,
-                        item.due_date ? t("plan.due", { date: formatDate(item.due_date, locale) }) : null
+                        item.category_name
+                          ? categoryLabel(item.category_name, t)
+                          : null,
+                        item.due_date
+                          ? t("plan.due", {
+                              date: formatDate(item.due_date, locale),
+                            })
+                          : null,
                       ]
                         .filter(Boolean)
                         .join(" · ") || t("plan.noDetails")}

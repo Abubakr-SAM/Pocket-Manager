@@ -1,4 +1,6 @@
+
 "use client";
+
 import { useT } from "./LanguageProvider";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -16,6 +18,19 @@ export type Goal = {
 const inputClass =
   "w-full rounded-lg border border-line bg-background px-3 py-2 text-sm outline-none focus:border-muted";
 
+const formatInputAmount = (value: string) => {
+  const cleaned = value.replace(/[^\d.]/g, "");
+  const parts = cleaned.split(".");
+  const integer = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+
+  return parts.length > 1
+    ? `${integer}.${parts.slice(1).join("")}`
+    : integer;
+};
+
+const parseInputAmount = (value: string) =>
+  Number(value.replace(/\s/g, ""));
+
 export default function GoalForm({
   goal,
   onDone,
@@ -29,9 +44,11 @@ export default function GoalForm({
   const suffix = goal?.id ?? "new";
 
   const [name, setName] = useState(goal?.name ?? "");
-  const [target, setTarget] = useState(goal ? String(goal.target_amount) : "");
+  const [target, setTarget] = useState(
+    goal ? formatInputAmount(String(goal.target_amount)) : ""
+  );
   const [current, setCurrent] = useState(
-    goal ? String(goal.current_amount) : ""
+    goal ? formatInputAmount(String(goal.current_amount)) : ""
   );
   const [deadline, setDeadline] = useState(goal?.deadline ?? "");
   const [description, setDescription] = useState(goal?.description ?? "");
@@ -42,18 +59,23 @@ export default function GoalForm({
     e.preventDefault();
     setError(null);
 
-    const targetValue = Number(target);
-    const currentValue = current === "" ? 0 : Number(current);
+    const targetValue = parseInputAmount(target);
+    const currentValue = current === "" ? 0 : parseInputAmount(current);
 
     if (!name.trim()) {
       setError(t("goals.nameError"));
       return;
     }
-    if (!targetValue || targetValue <= 0) {
+
+    if (!targetValue || targetValue <= 0 || !Number.isFinite(targetValue)) {
       setError(t("goals.targetError"));
       return;
     }
-    if (Number.isNaN(currentValue) || currentValue < 0) {
+
+    if (
+      !Number.isFinite(currentValue) ||
+      currentValue < 0
+    ) {
       setError(t("goals.savedError"));
       return;
     }
@@ -126,13 +148,11 @@ export default function GoalForm({
           </label>
           <input
             id={`goal-target-${suffix}`}
-            type="number"
+            type="text"
             inputMode="decimal"
-            step="0.01"
-            min="0.01"
             required
             value={target}
-            onChange={(e) => setTarget(e.target.value)}
+            onChange={(e) => setTarget(formatInputAmount(e.target.value))}
             className={inputClass}
           />
         </div>
@@ -146,13 +166,11 @@ export default function GoalForm({
           </label>
           <input
             id={`goal-current-${suffix}`}
-            type="number"
+            type="text"
             inputMode="decimal"
-            step="0.01"
-            min="0"
             placeholder="0"
             value={current}
-            onChange={(e) => setCurrent(e.target.value)}
+            onChange={(e) => setCurrent(formatInputAmount(e.target.value))}
             className={inputClass}
           />
         </div>
@@ -199,7 +217,11 @@ export default function GoalForm({
           disabled={loading}
           className="w-full rounded-lg bg-foreground py-2 text-sm font-medium text-background transition-opacity disabled:opacity-50 sm:w-auto sm:px-6"
         >
-          {loading ? t("common.saving") : isEditing ? t("transactions.saveChanges") : t("goals.create")}
+          {loading
+            ? t("common.saving")
+            : isEditing
+              ? t("transactions.saveChanges")
+              : t("goals.create")}
         </button>
 
         {isEditing && (

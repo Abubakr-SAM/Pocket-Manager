@@ -12,7 +12,27 @@ import type { Translate } from "@/lib/i18n";
 
 const inputClass =
   "w-full rounded-lg border border-line bg-background px-3 py-2 text-sm outline-none focus:border-muted";
+function formatInputAmount(value: string) {
+  const cleaned = value.replace(/[^\d.]/g, "");
+  const dotIndex = cleaned.indexOf(".");
 
+  const integerPart =
+    dotIndex === -1 ? cleaned : cleaned.slice(0, dotIndex);
+
+  const decimalPart =
+    dotIndex === -1
+      ? null
+      : cleaned.slice(dotIndex + 1).replace(/\./g, "");
+
+  const formattedInteger = integerPart.replace(
+    /\B(?=(\d{3})+(?!\d))/g,
+    " "
+  );
+
+  return decimalPart === null
+    ? formattedInteger
+    : `${formattedInteger}.${decimalPart}`;
+}
 function deadlineInfo(deadline: string | null, t: Translate) {
   if (!deadline) return null;
 
@@ -52,7 +72,7 @@ export default function GoalList({ goals }: { goals: Goal[] }) {
   }
 
   async function addMoney(goal: Goal) {
-    const value = Number(addAmount);
+    const value = Number(addAmount.replace(/\s/g, ""));
 
     if (!value || value <= 0) {
       setError(t("transactions.amountError"));
@@ -230,21 +250,19 @@ export default function GoalList({ goals }: { goals: Goal[] }) {
                 <div className="space-y-2">
                   <div className="flex gap-2">
                     <input
-                      type="number"
-                      inputMode="decimal"
-                      step="0.01"
-                      min="0.01"
-                      autoFocus
-                      aria-label={t("goals.amountAria")}
-                      placeholder={t("transactions.amount")}
-                      value={addAmount}
-                      onChange={(e) => setAddAmount(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") addMoney(goal);
-                        if (e.key === "Escape") setAddingId(null);
-                      }}
-                      className={inputClass}
-                    />
+                        type="text"
+                        inputMode="decimal"
+                        autoFocus
+                        aria-label={t("goals.amountAria")}
+                        placeholder={t("transactions.amount")}
+                        value={addAmount}
+                        onChange={(e) => setAddAmount(formatInputAmount(e.target.value))}
+                        onKeyDown={(e) => {
+    if (e.key === "Enter") addMoney(goal);
+    if (e.key === "Escape") setAddingId(null);
+  }}
+  className={inputClass}
+/>
                     <button
                       type="button"
                       onClick={() => addMoney(goal)}

@@ -96,7 +96,7 @@ export const uz: Record<TranslationKey, string> = {
   "theme.title": "Ko'rinish",
   "theme.group": "Mavzu",
   "theme.light": "Yorug'",
-  "theme.dark": "Qorong'i",
+  "theme.dark": "Qorong'u",
   "theme.system": "Tizim",
   "theme.note":
     "\"Tizim\" qurilmangiz sozlamasiga ergashadi. Tanlovingiz shu brauzerda saqlanadi.",
